@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&display=swap');
+@import "tailwindcss";
+
+
+@theme {
+  --color-primary-bg:#f9f9f9;
+  --color-tahiti: #3ab7bf;
+  --color-bermuda: #78dcca;
+  --color-text-primary : #FFFFFF80;
+  --color-button-bg : #FFFFFF14;
+  --color-light-button-hover-bg:rgba(255,255,255,0.64);
+  --color-light-button-border-bg:rgba(255,255,255,0);
+  --color-light-button-hover-text:rgba(0,27,0);
+  --color-text-primary-button : rgb(19,21,23);
+  --color-primary-button-bg :#FFFFFF;
+  --color-primary-button-hover-bg : #ebeced;
+  --color-primary-button-text-color:rgb(19,21,23);
+  --color-secondary-white :rgba(255,255,255,0.79);
+  --color-divider :rgba(255,255,255,0.08);
+  --color-overlay-bg : #222222BB;
+  --color-template : #13370f;
+  --animate-normal:all 0.3s cubic-bezier(0.4,0,0.2,1);
+
+ --color-tertiary-color-alpha : rgba(255,255,255,0.5);
+  --color-form-extra-bg : rgba(255,255,255,0.08);
+  --color-form-extra-text : rgba(255,255,255,0.64);
+  --color-meta-row-hover-border : rgba(255,255,255,0.08);
+  --color-meta-row-hover-bg : rgba(255,255,255,0.16);
+
+  
+  --color-form-main-bg : rgba(255,255,255,0.08);
+  --color-form-main-sec : rgba(255,255,255,0.30);
+  --blur-normal : blur(16px);
+
+  --color-card-bg :rgba(255,255,255,0.04);
+  --color-card-border : rgba(255,255,255,0.04);
+  --color-card-border-hover:rgba(255,255,255,0.16);
+  --color-card-primary-text : rgba(255,255,255);
+  --color-card-secondary-text:#FFFFFFC9;
+  --color-card-tertiary-text:#FFFFFF80;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.05rem;
+}
+
+.no-zoom {
+  touch-action: none;             /* no pinch or pan on this element */
+  -ms-touch-action: none;         /* for IE11 */
+}
+
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
