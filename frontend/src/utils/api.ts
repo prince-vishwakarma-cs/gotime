@@ -1,4 +1,5 @@
 import axios from "axios";
+import { baseUrl } from "../config";
 
 export interface User {
   id: number;
@@ -138,7 +139,7 @@ export interface ShareableLinkResponse {
 }
 
 const apiClient = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: baseUrl,
   withCredentials: true,
 });
 export interface UpdateProfileData {
