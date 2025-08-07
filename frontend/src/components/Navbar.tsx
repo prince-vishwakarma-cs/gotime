@@ -25,7 +25,7 @@ export const Navbar = () => {
 
   return (
     <>
-      <header className="backdrop-blur-md shadow-sm fixed top-0 left-0 right-0 z-50 border-b border-divider text-white">
+      <header className="backdrop-blur-md shadow-sm fixed top-0 left-0 right-0 z-50 border-b border-border text-white">
         <nav className="container mx-auto px-4 md:px-8 lg:px-16 flex justify-between items-center h-16">
           <Link to="/" className="text-xl font-bold ">
             Gatherly
@@ -70,7 +70,7 @@ export const Navbar = () => {
                 <button
                   onClick={handleLogout}
                   disabled={isLoggingOut}
-                  className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 text-sm font-medium disabled:opacity-50"
+                className=" px-4 py-2 rounded-full text-sm font-medium bg-primary-button-background text-primary-button-text hover:bg-primary-button-hover-background"
                 >
                   {isLoggingOut ? "Logging out..." : "Logout"}
                 </button>
@@ -78,7 +78,7 @@ export const Navbar = () => {
             ) : (
               <button
                 onClick={() => dispatch(openLoginModal())}
-                className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm font-medium"
+                className=" px-4 py-2 rounded-full text-sm font-medium bg-primary-button-background text-primary-button-text hover:bg-primary-button-hover-background"
               >
                 Login
               </button>

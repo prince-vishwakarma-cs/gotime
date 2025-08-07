@@ -72,7 +72,7 @@ export default function Component() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto py-8 text-secondary-text">
         <div className="text-center py-20">Loading events...</div>
       </div>
     );
@@ -80,9 +80,9 @@ export default function Component() {
 
   return (
     <div className="h-full">
-      <section className="relative pt-24 pb-12 sm:pt-32 px-4 sm:px-6 lg:px-8">
+      <section className="relative pt-24 pb-12 sm:pt-32 px-6 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-center text-4xl leading-tight sm:text-5xl sm:leading-snug lg:text-[3.375rem] lg:leading-[3.92644rem] font-semibold tracking-tight text-white font-[Inter]">
+          <h1 className="text-center text-4xl leading-tight sm:text-5xl sm:leading-snug lg:text-[3.375rem] lg:leading-[3.92644rem] font-semibold tracking-tight text-white ">
             Create events, invite friends
             <br />
             Host a memorable event
@@ -90,21 +90,18 @@ export default function Component() {
             today
           </h1>
 
-          <p className="mt-4 text-center text-base sm:text-lg font-normal leading-normal tracking-[-0.05rem] text-text-primary font-[Inter]">
+          <p className="mt-4 text-center text-base sm:text-lg font-normal leading-normal tracking-[-0.05rem] text-secondary-text">
             Manage and Attend Events Easily
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 mt-6">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-4 mt-6">
             <Link
               to="/explore"
-              className="bg-primary-button-bg rounded-full text-text-primary-button hover:bg-primary-button-hover-bg hover:text-primary-button-text-color px-6 py-3 flex justify-center items-center"
+              className="bg-primary-button-background rounded-full text-primary-button-text hover:bg-primary-button-hover-background px-6 py-3 flex justify-center items-center"
             >
               <PartyPopper className="w-4 h-4 mr-2" />
               Explore events
             </Link>
           </div>
-          <p className="text-center text-base font-normal leading-normal tracking-[-0.05rem] text-text-primary font-[Inter]">
-            Trusted by more than 1,000+ companies
-          </p>
         </div>
       </section>
 
@@ -114,7 +111,6 @@ export default function Component() {
             Trending Events
           </h2>
           <section className="mb-16">
-            <h2 className="text-3xl font-bold  mb-6">Trending Events</h2>
             {trendingEvents && trendingEvents.length > 0 ? (
               <div className="flex justify-center gap-4">
                 {trendingEvents.map((event) => (
@@ -122,14 +118,14 @@ export default function Component() {
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500">No trending events right now.</p>
+              <p className="text-secondary-text">No trending events right now.</p>
             )}
           </section>
 
           <div className="text-center flex justify-center">
             <button
               onClick={() => navigate("/explore")}
-              className="text-text-primary flex hover:text-white items-center transition-colors"
+              className="text-secondary-text flex hover:text-primary-text items-center transition-colors"
             >
               Show more <ChevronDown className="w-4 h-4 ml-1" />
             </button>
@@ -144,32 +140,32 @@ export default function Component() {
                 <img
                   src="https://i.pravatar.cc/40?u=a"
                   alt="Reviewer 1"
-                  className="rounded-full border border-card-border-hover"
+                  className="rounded-full border border-button-border"
                 />
               </div>
-              <div className="border-white">
+              <div>
                 <img
                   src="https://i.pravatar.cc/40?u=b"
                   alt="Reviewer 2"
-                  className="rounded-full border border-card-border-hover"
+                  className="rounded-full border border-button-border"
                 />
               </div>
-              <div className="border-white">
+              <div >
                 <img
                   src="https://i.pravatar.cc/40?u=c"
                   alt="Reviewer 3"
-                  className="rounded-full border border-card-border-hover"
+                  className="rounded-full border border-button-border"
                 />
               </div>
-              <div className="border-white">
+              <div>
                 <img
                   src="https://i.pravatar.cc/40?u=d"
                   alt="Reviewer 4"
-                  className="rounded-full border border-card-border-hover"
+                  className="rounded-full border border-button-border"
                 />
               </div>
             </div>
-            <span className="text-white">+ Testimonials</span>
+            <span className="text-secondary-text">+ Testimonials</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {review.map((rev) => (
