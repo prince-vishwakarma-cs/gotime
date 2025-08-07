@@ -1,12 +1,9 @@
 import { Calendar, ChevronDown, MapPin, PartyPopper } from "lucide-react";
-import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useApi } from "../hooks/useApi";
-import { getTrendingEvents, type Event } from "../utils/api";
-
-interface EventCardProps {
-  event: Event;
-}
+import type { EventCardProps } from "../types/eventTypes";
+import { useGetTrendingEventsQuery } from "../redux/api/eventAPI";
+import { closeModals, openLoginModal } from "../redux/reducer/uiSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const EventCard = ({ event }: EventCardProps) => {
   const formattedDate = new Date(event.start_time).toLocaleDateString("en-IN", {
@@ -71,17 +68,19 @@ const review = [
 
 export default function Component() {
   const navigate = useNavigate();
-  const {
-    data: trendingEventsData,
-    isLoading: trendingLoading,
-    request: fetchTrending,
-  } = useApi(getTrendingEvents);
+  const dispatch = useDispatch()
+  const {isLoginModalOpen} = useSelector((state: any) => state.ui);
+  const { data: trendingEventsData, isLoading } = useGetTrendingEventsQuery();
 
-  useEffect(() => {
-    fetchTrending();
-  }, []);
   const trendingEvents = trendingEventsData?.events;
-  const isLoading = trendingLoading;
+
+  const buttonhandle = ()=>{
+    if(isLoginModalOpen){
+      dispatch(closeModals())
+    }else{
+      dispatch(openLoginModal())
+    }
+  }
 
   if (isLoading) {
     return (
@@ -130,6 +129,7 @@ export default function Component() {
           </p>
         </div>
       </section>
+      <button onClick={buttonhandle}>Open modal</button>
 
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">

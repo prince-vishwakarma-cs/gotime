@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { useUser } from "../contexts/userContext";
-import { useApi } from "../hooks/useApi";
+import { useSelector } from "react-redux";
+import type { RootState } from "../redux/store";
 import {
-  changePassword,
-  deleteAccount,
-  getMyBookmarks,
-  getMyCreatedEvents,
-  getMyRegistrations,
-  updateUserProfile,
-} from "../utils/api";
+  useGetMyBookmarksQuery,
+  useGetMyCreatedEventsQuery,
+  useGetMyRegistrationsQuery,
+} from "../redux/api/eventAPI";
+import {
+  useChangePasswordMutation,
+  useDeleteAccountMutation,
+  useLogoutUserMutation,
+  useUpdateUserProfileMutation,
+} from "../redux/api/authAPI";
 
 const EventListCard = ({
   event,
@@ -97,76 +100,60 @@ const SettingsModal = ({
 };
 
 const MyProfilePage = () => {
-  const { user, setUser, logout } = useUser();
+  const { user, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth
+  );
+
   const [activeTab, setActiveTab] = useState<
     "registrations" | "bookmarks" | "created" | "settings"
   >("registrations");
 
-  // State for modals
   const [isUpdateProfileOpen, setUpdateProfileOpen] = useState(false);
   const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
   const [isDeleteAccountOpen, setDeleteAccountOpen] = useState(false);
-
-  // State for forms
   const [name, setName] = useState(user?.name || "");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const {
-    data: registrationData,
-    isLoading: regLoading,
-    request: fetchRegistrations,
-  } = useApi(getMyRegistrations);
-  const {
-    data: bookmarkData,
-    isLoading: bookLoading,
-    request: fetchBookmarks,
-  } = useApi(getMyBookmarks);
-  const {
-    data: createdEventsData,
-    isLoading: createdLoading,
-    request: fetchCreatedEvents,
-  } = useApi(getMyCreatedEvents);
-  const { request: performUpdateProfile, isLoading: isUpdatingProfile } =
-    useApi(updateUserProfile);
-  const { request: performChangePassword, isLoading: isChangingPassword } =
-    useApi(changePassword);
-  const { request: performDeleteAccount, isLoading: isDeletingAccount } =
-    useApi(deleteAccount);
+  const { data: registrationData, isLoading: regLoading } =
+    useGetMyRegistrationsQuery(undefined, { skip: !isAuthenticated });
+  const { data: bookmarkData, isLoading: bookLoading } = useGetMyBookmarksQuery(
+    undefined,
+    { skip: !isAuthenticated }
+  );
+  const { data: createdEventsData, isLoading: createdLoading } =
+    useGetMyCreatedEventsQuery({}, { skip: !isAuthenticated });
 
-  useEffect(() => {
-    if (user) {
-      fetchRegistrations();
-      fetchBookmarks();
-      fetchCreatedEvents();
-    }
-  }, [user]);
+  const [updateUserProfile, { isLoading: isUpdatingProfile }] =
+    useUpdateUserProfileMutation();
+  const [changePassword, { isLoading: isChangingPassword }] =
+    useChangePasswordMutation();
+  const [deleteAccount, { isLoading: isDeletingAccount }] =
+    useDeleteAccountMutation();
+  const [logoutUser] = useLogoutUserMutation();
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await performUpdateProfile({ name });
-      if (response?.user) {
-        setUser(response.user);
-      }
+      await updateUserProfile({ name }).unwrap();
       toast.success("Profile updated successfully!");
       setUpdateProfileOpen(false);
     } catch (err: any) {
-      toast.error(err.message || "Failed to update profile.");
+      toast.error(err.data?.message || "Failed to update profile.");
     }
   };
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await performChangePassword({ currentPassword, newPassword });
+      await changePassword({ currentPassword, newPassword }).unwrap();
       toast.success("Password changed successfully!");
       setChangePasswordOpen(false);
       setCurrentPassword("");
       setNewPassword("");
     } catch (err: any) {
-      toast.error(err.message || "Failed to change password.");
+      toast.error(err.data?.message || "Failed to change password.");
     }
   };
 
@@ -177,14 +164,11 @@ const MyProfilePage = () => {
       return;
     }
     try {
-      await performDeleteAccount({ password: currentPassword });
+      await deleteAccount({ password: currentPassword }).unwrap();
       toast.success("Account deleted successfully.");
-      setDeleteAccountOpen(false);
-      setCurrentPassword("");
-      setConfirmPassword("");
-      await logout();
+      await logoutUser().unwrap();
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete account.");
+      toast.error(err.data?.message || "Failed to delete account.");
     }
   };
 

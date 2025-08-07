@@ -16,7 +16,6 @@ const ShareModal = ({ isOpen, onClose, shareUrl, qrCode }: ShareModalProps) => {
     if (shareUrl) {
       navigator.clipboard.writeText(shareUrl);
       setIsCopied(true);
-      // Reset the "Copied!" message after a few seconds
       setTimeout(() => setIsCopied(false), 2000);
     }
   };

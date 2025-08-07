@@ -1,21 +1,22 @@
 import { Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useUser } from "../contexts/userContext";
-import { useApi } from "../hooks/useApi";
 import LoginModal from "../modals/LoginModal";
 import RegisterModal from "../modals/RegisterModal";
 import ShareModal from "../modals/ShareModal";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../redux/store";
 import {
-  addBookmark,
-  deleteEvent,
-  getEventById,
-  getEventStats,
-  getGoogleCalendarLink,
-  getShareableLink,
-  registerForEvent,
-} from "../utils/api";
+  useAddBookmarkMutation,
+  useDeleteEventMutation,
+  useGetEventByIdQuery,
+  useGetEventStatsQuery,
+  useLazyGetGoogleCalendarLinkQuery,
+  useLazyGetShareableLinkQuery,
+  useRegisterForEventMutation,
+} from "../redux/api/eventAPI";
+import { openLoginModal } from "../redux/reducer/uiSlice";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -89,10 +90,12 @@ const DetailItem = ({ label, value }: { label: string; value: string }) => (
 const EventDetailPage = () => {
   const { eventId } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
-  const { user } = useUser();
+  const dispatch = useDispatch();
 
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const { user, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth
+  );
+
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState({
@@ -100,50 +103,45 @@ const EventDetailPage = () => {
     message: "",
     onConfirm: undefined as (() => void) | undefined,
   });
+  const {
+    data: eventData,
+    isLoading,
+    error,
+  } = useGetEventByIdQuery(eventId!, { skip: !eventId });
 
-  const { data, isLoading, error, request: fetchEvent } = useApi(getEventById);
-  const { request: performRegister, isLoading: isRegistering } =
-    useApi(registerForEvent);
-  const { request: performBookmark, isLoading: isBookmarking } =
-    useApi(addBookmark);
-  const { request: fetchCalendarLink } = useApi(getGoogleCalendarLink);
-  const { request: fetchShareLink, data: shareData } = useApi(getShareableLink);
-  const { request: performDelete, isLoading: isDeleting } = useApi(deleteEvent);
-  const { data: statsData, request: fetchStats } = useApi(getEventStats);
-
-  useEffect(() => {
-    if (eventId) {
-      fetchEvent(eventId);
-    }
-  }, [eventId]);
-
-  const event = data?.event;
+  const event = eventData?.event;
   const isOrganizer = user && event && user.id === event.organizer_id;
-  useEffect(() => {
-    if (isOrganizer && eventId) {
-      fetchStats(eventId);
-    }
-  }, [isOrganizer, eventId]);
+
+  const { data: statsData } = useGetEventStatsQuery(eventId!, {
+    skip: !isOrganizer || !eventId,
+  });
+
+  const [fetchCalendarLink] = useLazyGetGoogleCalendarLinkQuery();
+  const [fetchShareLink, { data: shareData }] = useLazyGetShareableLinkQuery();
+
+  const [registerForEvent, { isLoading: isRegistering }] =
+    useRegisterForEventMutation();
+  const [addBookmark, { isLoading: isBookmarking }] = useAddBookmarkMutation();
+  const [deleteEvent, { isLoading: isDeleting }] = useDeleteEventMutation();
 
   const handleRegisterClick = async () => {
-    if (!user) {
-      setIsLoginModalOpen(true);
+    if (!isAuthenticated) {
+      dispatch(openLoginModal());
       return;
     }
     if (eventId) {
       try {
-        await performRegister(eventId);
+        await registerForEvent(eventId).unwrap();
         setModalContent({
           title: "Success",
           message: "You have been successfully registered for the event.",
           onConfirm: undefined,
         });
         setIsConfirmModalOpen(true);
-        fetchEvent(eventId);
-      } catch (e: any) {
+      } catch (err: any) {
         setModalContent({
           title: "Registration Failed",
-          message: e.message || "You may already be registered.",
+          message: err.data?.message || "You may already be registered.",
           onConfirm: undefined,
         });
         setIsConfirmModalOpen(true);
@@ -154,16 +152,15 @@ const EventDetailPage = () => {
   const handleEventDelete = () => {
     setModalContent({
       title: "Delete Event",
-      message:
-        "Are you sure you want to delete this event? This action cannot be undone.",
+      message: "Are you sure? This action cannot be undone.",
       onConfirm: async () => {
         if (eventId) {
           try {
-            await performDelete(eventId);
+            await deleteEvent(eventId).unwrap();
             toast.success("Event deleted successfully");
             navigate("/explore");
           } catch (err: any) {
-            toast.error(err.message || "Failed to delete event.");
+            toast.error(err.data?.message || "Failed to delete event.");
           }
         }
       },
@@ -172,35 +169,29 @@ const EventDetailPage = () => {
   };
 
   const handleBookmarkClick = async () => {
-    if (!user) {
-      setIsLoginModalOpen(true);
+    if (!isAuthenticated) {
+      dispatch(openLoginModal());
       return;
     }
     if (eventId) {
       try {
-        await performBookmark(eventId);
-        setModalContent({
-          title: "Success",
-          message: "Event has been added to your bookmarks.",
-          onConfirm: undefined,
-        });
-        setIsConfirmModalOpen(true);
-      } catch (e: any) {
-        setModalContent({
-          title: "Error",
-          message: e.message || "You may have already bookmarked this event.",
-          onConfirm: undefined,
-        });
-        setIsConfirmModalOpen(true);
+        await addBookmark(eventId).unwrap();
+        toast.success("Event added to your bookmarks!");
+      } catch (err: any) {
+        toast.error(err.data?.message || "Could not bookmark event.");
       }
     }
   };
 
   const handleCalendarClick = async () => {
     if (eventId) {
-      const result = await fetchCalendarLink(eventId);
-      if (result?.googleCalendarUrl) {
-        window.open(result.googleCalendarUrl, "_blank");
+      try {
+        const result = await fetchCalendarLink(eventId).unwrap();
+        if (result?.googleCalendarUrl) {
+          window.open(result.googleCalendarUrl, "_blank");
+        }
+      } catch (err) {
+        toast.error("Could not generate calendar link.");
       }
     }
   };
@@ -210,15 +201,6 @@ const EventDetailPage = () => {
       fetchShareLink(eventId);
       setIsShareModalOpen(true);
     }
-  };
-
-  const openRegisterModal = () => {
-    setIsLoginModalOpen(false);
-    setIsRegisterModalOpen(true);
-  };
-  const openLoginModal = () => {
-    setIsRegisterModalOpen(false);
-    setIsLoginModalOpen(true);
   };
 
   const formatDate = (dateString: string) =>
@@ -234,8 +216,15 @@ const EventDetailPage = () => {
 
   if (isLoading)
     return <div className="text-center py-24">Loading event details...</div>;
-  if (error)
-    return <div className="text-center py-24 text-red-600">Error: {error}</div>;
+  {
+    error && (
+      <p className="text-red-500 text-xs italic mb-4">
+        {"status" in error && "error" in (error.data as any)
+          ? (error.data as any).error
+          : "Login failed"}
+      </p>
+    );
+  }
   if (!event) return <div className="text-center py-24">No event found.</div>;
 
   return (
@@ -359,16 +348,8 @@ const EventDetailPage = () => {
       </div>
 
       {/* Modals */}
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-        onSwitchToRegister={openRegisterModal}
-      />
-      <RegisterModal
-        isOpen={isRegisterModalOpen}
-        onClose={() => setIsRegisterModalOpen(false)}
-        onSwitchToLogin={openLoginModal}
-      />
+      <LoginModal />
+      <RegisterModal />
       <ShareModal
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}

@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useApi } from '../hooks/useApi';
-import { getEventById, updateEvent, type EventFormData } from '../utils/api';
+import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useGetEventByIdQuery, useUpdateEventMutation } from "../redux/api/eventAPI";
+import type { EventFormData } from '../types/eventTypes';
 
-// Helper function to format a Date object into 'YYYY-MM-DDTHH:mm' for the input
 const formatDateForInput = (date: Date | string): string => {
   const d = new Date(date);
   const pad = (num: number) => num.toString().padStart(2, '0');
@@ -16,7 +15,6 @@ const formatDateForInput = (date: Date | string): string => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-// --- Reusable Sliding Toggle Component ---
 interface ToggleSwitchProps {
   checked: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -40,7 +38,6 @@ const ToggleSwitch = ({ checked, onChange, name, id }: ToggleSwitchProps) => {
   );
 };
 
-// --- Image Options ---
 const imageOptions = [
     'https://images.pexels.com/photos/33242508/pexels-photo-33242508/free-photo-of-elegant-wedding-invitation-with-floral-bouquet.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
     'https://images.pexels.com/photos/17229131/pexels-photo-17229131/free-photo-of-restaurant-table-decorated-with-red-vases-filled-with-flowers.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
@@ -55,16 +52,13 @@ const EditEventPage = () => {
   const { eventId } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
 
-  const { data: eventData, isLoading: isFetching, error: fetchError, request: fetchEvent } = useApi(getEventById);
-  const { request: performUpdateEvent, isLoading: isUpdating, error: updateError } = useApi(updateEvent);
+  const { data: eventData, isLoading: isFetching, error: fetchError } = useGetEventByIdQuery(eventId!, {
+    skip: !eventId,
+  });
+
+  const [updateEvent, { isLoading: isUpdating, error: updateError }] = useUpdateEventMutation();
 
   const [formData, setFormData] = useState<Partial<EventFormData>>({});
-
-  useEffect(() => {
-    if (eventId) {
-      fetchEvent(eventId);
-    }
-  }, [eventId]);
 
   useEffect(() => {
     if (eventData?.event) {
@@ -99,45 +93,43 @@ const EditEventPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!eventId) return;
+
     try {
-      await performUpdateEvent(eventId, {
-        ...formData,
-        capacity: Number(formData.capacity),
-      });
+      await updateEvent({
+        eventId,
+        data: {
+          ...formData,
+          capacity: Number(formData.capacity),
+        },
+      }).unwrap();
+
       toast.success('Event updated successfully!');
       navigate(`/events/${eventId}`);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to update event.');
+      toast.error(err.data?.message || 'Failed to update event.');
     }
   };
 
   if (isFetching) return <div className="text-center py-24">Loading event data...</div>;
-  if (fetchError) return <div className="text-center py-24 text-red-600">Error: {fetchError}</div>;
+  if (fetchError) return <div className="text-center py-24 text-red-600">Error: { 'Could not load event'}</div>;
 
   return (
     <div className="container mx-auto py-12">
       <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-md">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Edit Event</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Title */}
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700">Event Title</label>
             <input type="text" name="title" id="title" value={formData.title || ''} onChange={handleChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-800 focus:border-gray-800" required />
           </div>
-
-          {/* Description */}
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
             <textarea name="description" id="description" rows={4} value={formData.description || ''} onChange={handleChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-800 focus:border-gray-800" required />
           </div>
-
-          {/* Location */}
           <div>
             <label htmlFor="location" className="block text-sm font-medium text-gray-700">Location</label>
             <input type="text" name="location" id="location" value={formData.location || ''} onChange={handleChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-800 focus:border-gray-800" required />
           </div>
-
-          {/* Start & End Time */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="start_time" className="block text-sm font-medium text-gray-700">Start Time</label>
@@ -148,14 +140,10 @@ const EditEventPage = () => {
               <input type="datetime-local" name="end_time" id="end_time" value={formData.end_time || ''} onChange={handleChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-800 focus:border-gray-800" required />
             </div>
           </div>
-
-          {/* Capacity */}
           <div>
             <label htmlFor="capacity" className="block text-sm font-medium text-gray-700">Capacity</label>
             <input type="number" name="capacity" id="capacity" min="1" value={formData.capacity || 100} onChange={handleChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-800 focus:border-gray-800" required />
           </div>
-          
-          {/* Image Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Select an Image</label>
             <div className="mt-2 grid grid-cols-3 gap-4">
@@ -172,7 +160,6 @@ const EditEventPage = () => {
             </div>
           </div>
           
-          {/* Public Toggle */}
           <div className="flex items-center justify-between pt-2">
             <div>
                 <label htmlFor="is_public" className="font-medium text-gray-900">Make this event public</label>
@@ -181,7 +168,7 @@ const EditEventPage = () => {
             <ToggleSwitch id="is_public" name="is_public" checked={!!formData.is_public} onChange={handleChange} />
           </div>
 
-          {updateError && <p className="text-red-500 text-sm">{updateError}</p>}
+          {updateError && <p className="text-red-500 text-sm">{'Could not update event'}</p>}
           <div className="pt-4">
             <button type="submit" disabled={isUpdating} className="w-full bg-gray-900 text-white py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 disabled:opacity-50">
               {isUpdating ? 'Saving Changes...' : 'Save Changes'}

@@ -1,44 +1,36 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { useUser } from "../contexts/userContext";
+import { useDispatch, useSelector } from "react-redux";
+import { useLoginUserMutation } from "../redux/api/authAPI";
+import { closeModals, switchToRegister } from "../redux/reducer/uiSlice";
 
-export interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSwitchToRegister?: () => void;
-}
-const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: ModalProps) => {
-  const { login } = useUser();
-
+const LoginModal = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loginUser, { isLoading, error }] = useLoginUserMutation();
+  const { isLoginModalOpen } = useSelector((state: any) => state.ui);
+  const dispatch = useDispatch();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
     try {
-      await login({ email, password });
+      await loginUser({ email, password }).unwrap();
       toast.success("Logged in successfully!");
       setEmail("");
       setPassword("");
-      onClose();
+      dispatch(closeModals());
     } catch (err: any) {
-      setError(err?.message);
-    } finally {
-      setIsSubmitting(false);
+       toast.error(err.data?.message || "Login failed.");
     }
   };
 
-  if (!isOpen) return null;
+  if (!isLoginModalOpen) return null;
 
-  const handleClose = ()=>{
-      setEmail("");
-      setPassword("");
-      onClose();
-  }
+  const handleClose = () => {
+    setEmail("");
+    setPassword("");
+    dispatch(closeModals());
+  };
 
   return (
     <div
@@ -74,7 +66,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: ModalProps) => {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               placeholder="you@example.com"
               required
-              disabled={isSubmitting}
+              disabled={isLoading}
             />
           </div>
           <div className="mb-6">
@@ -92,24 +84,30 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: ModalProps) => {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
               placeholder="******************"
               required
-              disabled={isSubmitting}
+              disabled={isLoading}
             />
           </div>
-          {error && <p className="text-red-500 text-xs italic mb-4">{error}</p>}
+          {error && (
+            <p className="text-red-500 text-xs italic mb-4">
+              {"status" in error && "error" in (error.data as any)
+                ? (error.data as any).error
+                : "Login failed"}
+            </p>
+          )}
           <div className="flex items-center justify-between">
             <button
               className="bg-gray-900 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full disabled:opacity-50"
               type="submit"
-              disabled={isSubmitting}
+              disabled={isLoading}
             >
-              {isSubmitting ? "Signing In..." : "Sign In"}
+              {isLoading ? "Signing In..." : "Sign In"}
             </button>
           </div>
           <p className="text-center text-gray-500 text-xs mt-4">
             Don't have an account?{" "}
             <button
               type="button"
-              onClick={onSwitchToRegister}
+              onClick={() => dispatch(switchToRegister())}
               className="font-bold text-blue-500 hover:text-blue-700"
             >
               Sign up

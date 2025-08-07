@@ -1,9 +1,9 @@
 import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useApi } from "../hooks/useApi";
 import { useDebounce } from "../hooks/useDebounce";
-import { getAllEvents, type EventCardProps } from "../utils/api";
+import { useGetAllEventsQuery } from "../redux/api/eventAPI";
+import type { EventCardProps } from "../types/eventTypes";
 
 const EventCard = ({ event }: EventCardProps) => {
   const formattedDate = new Date(event.start_time).toLocaleDateString("en-IN", {
@@ -39,19 +39,18 @@ const EventCard = ({ event }: EventCardProps) => {
 };
 
 const ExploreEventsPage = () => {
-  const {
-    data: allEventsData,
-    isLoading: allEventsLoading,
-    error: allEventsError,
-    request: fetchAllEvents,
-  } = useApi(getAllEvents);
-
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  useEffect(() => {
-    fetchAllEvents({ page: 1, limit: 8, search: debouncedSearchTerm });
-  }, [debouncedSearchTerm]);
+  const {
+    data: allEventsData,
+    isLoading,
+    isError
+  } = useGetAllEventsQuery({
+    page: 1, 
+    limit: 8,
+    search: debouncedSearchTerm,
+  });
 
   const allEvents = allEventsData?.events;
 
@@ -74,16 +73,15 @@ const ExploreEventsPage = () => {
         </div>
       </header>
 
-      {allEventsLoading && (
-        <div className="text-center py-20">Loading events...</div>
-      )}
-      {allEventsError && (
+      {isLoading && <div className="text-center py-20">Loading events...</div>}
+      
+      {isError && (
         <div className="text-center py-20 text-red-500">
-          <p>{allEventsError}</p>
+          <p>{"Failed to load events."}</p>
         </div>
       )}
 
-      {!allEventsLoading && (
+      {!isLoading && !isError && (
         <section>
           {allEvents && allEvents.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

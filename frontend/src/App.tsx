@@ -2,7 +2,9 @@ import { lazy, Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Loader from "./components/Loader";
-import { UserContextProvider, useUser } from "./contexts/userContext";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
+import { useGetMyProfileQuery } from "./redux/api/authAPI";
 
 const MainLayout = lazy(() => import("./components/Mainlayout"));
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -14,7 +16,7 @@ const CreateEventPage = lazy(() => import("./pages/CreateEventPage"));
 const EditEventPage = lazy(() => import("./pages/EditEventPage"));
 
 const AppContent = () => {
-  const { isLoading } = useUser();
+  const { isLoading } = useGetMyProfileQuery();
 
   if (isLoading) {
     return (
@@ -26,7 +28,11 @@ const AppContent = () => {
 
   return (
     <Suspense
-      fallback={<div className="text-center p-10">Loading Page...</div>}
+      fallback={
+        <div className="flex items-center justify-center h-screen bg-gray-50">
+          <Loader />
+        </div>
+      }
     >
       <Routes>
         <Route element={<MainLayout />}>
@@ -46,12 +52,12 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <UserContextProvider>
-        <Toaster position="top-center" />
-        <AppContent />
-      </UserContextProvider>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+          <Toaster position="top-center" />
+          <AppContent />
+      </BrowserRouter>
+    </Provider>
   );
 };
 

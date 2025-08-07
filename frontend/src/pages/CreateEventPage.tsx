@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useApi } from '../hooks/useApi';
-import { createEvent, type EventFormData } from '../utils/api';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { useCreateEventMutation } from '../redux/api/eventAPI';
+import type { EventFormData } from '../types/eventTypes';
 
-// Helper function to format a Date object into 'YYYY-MM-DDTHH:mm' for the input
 const formatDateForInput = (date: Date): string => {
   const pad = (num: number) => num.toString().padStart(2, '0');
   const year = date.getFullYear();
@@ -15,7 +14,6 @@ const formatDateForInput = (date: Date): string => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-// --- Reusable Sliding Toggle Component ---
 interface ToggleSwitchProps {
   checked: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -32,7 +30,7 @@ const ToggleSwitch = ({ checked, onChange, name, id }: ToggleSwitchProps) => {
         id={id}
         checked={checked}
         onChange={onChange}
-        className="sr-only peer" // The actual checkbox is hidden but accessible
+        className="sr-only peer"
       />
       <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-800"></div>
     </label>
@@ -49,9 +47,12 @@ const imageOptions = [
 ];
 
 
+
 const CreateEventPage = () => {
   const navigate = useNavigate();
-  const { request: performCreateEvent, isLoading, error } = useApi(createEvent);
+  
+  // 2. Call the hook to get the trigger function and the mutation's state
+  const [createEvent, { isLoading}] = useCreateEventMutation();
 
   // Set default dates
   const now = new Date();
@@ -87,17 +88,19 @@ const CreateEventPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const newEvent = await performCreateEvent({
+      // Call the trigger function with the form data.
+      // .unwrap() returns a promise that resolves on success or throws an error on failure.
+      const newEventResponse = await createEvent({
         ...formData,
         capacity: Number(formData.capacity), // Ensure capacity is a number
-      });
+      }).unwrap();
       
-      if (newEvent) {
-        toast.success('Event created successfully!');
-        navigate(`/events/${newEvent.event.id}`); // Redirect to the new event's page
-      }
+      toast.success('Event created successfully!');
+      // Redirect to the newly created event's page
+      navigate(`/events/${newEventResponse.event.id}`);
+
     } catch (err: any) {
-      toast.error(err.message || 'Failed to create event.');
+      toast.error('Failed to create event.');
     }
   };
 
@@ -230,7 +233,8 @@ const CreateEventPage = () => {
           </div>
 
           {/* Error and Submit */}
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+{/* */}
+          {/* {error && <p className="text-red-500 text-sm">{error}</p>} */}
           <div className="pt-4">
             <button
               type="submit"

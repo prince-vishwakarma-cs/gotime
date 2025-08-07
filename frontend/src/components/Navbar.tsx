@@ -1,21 +1,23 @@
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { useUser } from "../contexts/userContext";
+import { useDispatch, useSelector } from "react-redux";
+import { useLogoutUserMutation } from "../redux/api/authAPI";
+import { openLoginModal } from "../redux/reducer/uiSlice";
+import type { RootState } from "../redux/store";
 
-const Navbar = () => {
-  const { user, logout, openLoginModal } = useUser();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+export const Navbar = () => {
+  const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const [logoutUser, { isLoading: isLoggingOut }] = useLogoutUserMutation();
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const handleLogout = async () => {
-    setIsLoggingOut(true);
     try {
-      await logout();
+      await logoutUser().unwrap();
     } catch (error) {
       console.error("Logout failed", error);
-    } finally {
-      setIsLoggingOut(false);
     }
   };
 
@@ -46,7 +48,7 @@ const Navbar = () => {
               Upcoming
             </NavLink>
 
-            {user ? (
+            {isAuthenticated ? (
               <>
                 <NavLink
                   to="/events/new"
@@ -74,7 +76,7 @@ const Navbar = () => {
               </>
             ) : (
               <button
-                onClick={openLoginModal}
+                onClick={() => dispatch(openLoginModal())}
                 className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm font-medium"
               >
                 Login
@@ -95,71 +97,14 @@ const Navbar = () => {
           isDrawerOpen ? "translate-x-0" : "translate-x-full"
         } transition-transform duration-300 ease-in-out md:hidden`}
       >
-        <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm"
-          onClick={closeDrawer}
-        ></div>
         <div className="fixed top-0 right-0 h-full w-full bg-gray-900 shadow-lg p-6">
           <button onClick={closeDrawer} className="absolute top-4 right-4">
             <X className="h-6 w-6 text-white" />
           </button>
           <nav className="mt-12 flex flex-col items-center space-y-6">
-            <NavLink
-              to="/explore"
-              onClick={closeDrawer}
-              className={({ isActive }) =>
-                `text-lg ${
-                 isActive
-                  ? "font-bold"
-                  : "text-white"
-                }`
-              }
-            >
-              Explore
-            </NavLink>
-            <NavLink
-              to="/upcoming"
-              onClick={closeDrawer}
-              className={({ isActive }) =>
-                `text-lg ${
-                 isActive
-                  ? "font-bold"
-                  : "text-white"
-                }`
-              }
-            >
-              Upcoming
-            </NavLink>
             <hr />
-
-            {user ? (
+            {isAuthenticated ? (
               <>
-                <NavLink
-                  to="/events/new"
-                  onClick={closeDrawer}
-                  className={({ isActive }) =>
-                    `text-lg ${
-                   isActive
-                  ? "font-bold"
-                  : "text-white"
-                    }`
-                  }
-                >
-                  Create Event
-                </NavLink>
-                <NavLink
-                  to="/me"
-                  onClick={closeDrawer}
-                  className={({ isActive }) =>
-                    `text-lg ${
- isActive
-                  ? "font-bold"
-                  : "text-white"
-                    }`
-                  }
-                >
-                  Profile
-                </NavLink>
                 <button
                   onClick={() => {
                     handleLogout();
@@ -174,10 +119,10 @@ const Navbar = () => {
             ) : (
               <button
                 onClick={() => {
-                  openLoginModal();
+                  dispatch(openLoginModal());
                   closeDrawer();
                 }}
-                className="w-full text-left text-lg text-gray-600 hover:text-gray-900"
+                className="w-full text-center text-lg text-white"
               >
                 Login
               </button>
@@ -188,5 +133,3 @@ const Navbar = () => {
     </>
   );
 };
-
-export default Navbar;
