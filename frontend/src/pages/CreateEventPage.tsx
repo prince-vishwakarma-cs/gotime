@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { useCreateEventMutation } from '../redux/api/eventAPI';
 import type { EventFormData } from '../types/eventTypes';
+import { Calendar } from 'lucide-react';
 
 const formatDateForInput = (date: Date): string => {
   const pad = (num: number) => num.toString().padStart(2, '0');
@@ -32,7 +33,29 @@ const ToggleSwitch = ({ checked, onChange, name, id }: ToggleSwitchProps) => {
         onChange={onChange}
         className="sr-only peer"
       />
-      <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-800"></div>
+      {/* This div is the visible part of the toggle */}
+      <div
+        className="
+          w-11 h-6 rounded-full 
+          transition-colors duration-200
+          
+          // --- Default (Off) State ---
+          bg-card-background border border-button-border 
+          
+          // --- Checked (On) State ---
+          peer-checked:bg-primary-background
+          outline-none
+          
+          // --- Focus State ---
+
+          // --- Thumb (The moving circle) ---
+          after:content-[''] after:absolute after:top-0.5 after:left-[2px] 
+          after:h-5 after:w-5 after:rounded-full 
+          after:bg-primary-button-background
+          after:transition-all
+          peer-checked:after:translate-x-full
+        "
+      ></div>
     </label>
   );
 };
@@ -149,27 +172,33 @@ const CreateEventPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="start_time" className="block text-sm font-medium">Start Time</label>
-              <input
-                type="datetime-local"
-                name="start_time"
-                id="start_time"
-                value={formData.start_time}
-                onChange={handleChange}
-                className={inputStyles}
-                required
-              />
+              <div className="relative mt-1">
+                <input
+                  type="datetime-local"
+                  name="start_time"
+                  id="start_time"
+                  value={formData.start_time}
+                  onChange={handleChange}
+                  className={`${inputStyles} pr-10 [&::-webkit-calendar-picker-indicator]:hidden`}
+                  required
+                />
+                <Calendar className="absolute top-1/2 right-3 text-text-primary -translate-y-1/2 h-5 w-5 pointer-events-none" />
+              </div>
             </div>
             <div>
               <label htmlFor="end_time" className="block text-sm font-medium">End Time</label>
-              <input
-                type="datetime-local"
-                name="end_time"
-                id="end_time"
-                value={formData.end_time}
-                onChange={handleChange}
-                className={inputStyles}
-                required
-              />
+              <div className="relative mt-1">
+                <input
+                  type="datetime-local"
+                  name="end_time"
+                  id="end_time"
+                  value={formData.end_time}
+                  onChange={handleChange}
+                  className={`${inputStyles} pr-10 [&::-webkit-calendar-picker-indicator]:hidden`}
+                  required
+                />
+                <Calendar className="absolute top-1/2 right-3 -translate-y-1/2 h-5 w-5 text-text-primary pointer-events-none" />
+              </div>
             </div>
           </div>
 
@@ -232,7 +261,7 @@ const CreateEventPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gray-900 text-white py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 disabled:opacity-50"
+              className="w-full rounded-full bg-primary-button-background text-primary-button-text hover:bg-primary-button-hover-background py-3 px-4 border border-transparent text-lg font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 disabled:opacity-50"
             >
               {isLoading ? 'Creating Event...' : 'Create Event'}
             </button>
