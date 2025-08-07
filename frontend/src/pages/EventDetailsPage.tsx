@@ -16,7 +16,6 @@ import {
 import { openLoginModal } from "../redux/reducer/uiSlice";
 import type { RootState } from "../redux/store";
 
-// --- Themed Confirmation Modal ---
 const ConfirmationModal = ({
   isOpen,
   onClose,
