@@ -198,7 +198,7 @@ export default function Component() {
         </div>
       </section>
 
-      <footer className="bg-card-bg text-card-tertiary-text py-16  mt-12">
+      <footer className="border-t border-border text-secondary-text py-16  mt-12">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="col-span-2 md:col-span-1">

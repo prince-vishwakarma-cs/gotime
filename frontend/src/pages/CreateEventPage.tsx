@@ -119,7 +119,7 @@ const CreateEventPage = () => {
   const inputStyles = "mt-1 block w-full px-3 py-2 text-text-primary bg-button-bg rounded-lg outline-none";
 
   return (
-    <div className="container mx-auto pt-24 px-4 sm:px-6 lg:px-8">
+    <div className="container mx-auto pt-14 sm:pt-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto p-8 rounded-xl shadow-md">
         <h1 className="text-3xl font-bold mb-8">Create a New Event</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -179,7 +179,7 @@ const CreateEventPage = () => {
                   id="start_time"
                   value={formData.start_time}
                   onChange={handleChange}
-                  className={`${inputStyles} pr-10 [&::-webkit-calendar-picker-indicator]:hidden`}
+                  className={`${inputStyles} hide-arrows`}
                   required
                 />
                 <Calendar className="absolute top-1/2 right-3 text-text-primary -translate-y-1/2 h-5 w-5 pointer-events-none" />
@@ -194,7 +194,7 @@ const CreateEventPage = () => {
                   id="end_time"
                   value={formData.end_time}
                   onChange={handleChange}
-                  className={`${inputStyles} pr-10 [&::-webkit-calendar-picker-indicator]:hidden`}
+                  className={`${inputStyles} hide-arrows`}
                   required
                 />
                 <Calendar className="absolute top-1/2 right-3 -translate-y-1/2 h-5 w-5 text-text-primary pointer-events-none" />
