@@ -30,40 +30,21 @@ export const Navbar = () => {
           <Link to="/" className="text-xl font-bold ">
             Gatherly
           </Link>
+          {/* --- DESKTOP NAVIGATION (Correct) --- */}
           <div className="hidden md:flex items-center space-x-4 md:space-x-6">
-            <NavLink
-              to="/explore"
-              className={({ isActive }) =>
-                isActive ? "font-bold" : "text-white"
-              }
-            >
+            <NavLink to="/explore" className={({ isActive }) => isActive ? "font-bold" : "text-white"}>
               Explore
             </NavLink>
-            <NavLink
-              to="/upcoming"
-              className={({ isActive }) =>
-                isActive ? "font-bold" : "text-white"
-              }
-            >
+            <NavLink to="/upcoming" className={({ isActive }) => isActive ? "font-bold" : "text-white"}>
               Upcoming
             </NavLink>
 
             {isAuthenticated ? (
               <>
-                <NavLink
-                  to="/events/new"
-                  className={({ isActive }) =>
-                    isActive ? "font-bold" : "text-white"
-                  }
-                >
+                <NavLink to="/events/new" className={({ isActive }) => isActive ? "font-bold" : "text-white"}>
                   Create Event
                 </NavLink>
-                <NavLink
-                  to="/me"
-                  className={({ isActive }) =>
-                    isActive ? "font-bold" : "text-white"
-                  }
-                >
+                <NavLink to="/me" className={({ isActive }) => isActive ? "font-bold" : "text-white"}>
                   Profile
                 </NavLink>
                 <button
@@ -92,19 +73,40 @@ export const Navbar = () => {
         </nav>
       </header>
 
+      {/* --- MOBILE DRAWER --- */}
       <div
         className={`fixed inset-0 z-50 transform ${
           isDrawerOpen ? "translate-x-0" : "translate-x-full"
         } transition-transform duration-300 ease-in-out md:hidden`}
       >
-        <div className="fixed top-0 right-0 h-full w-full bg-gray-900 shadow-lg p-6">
+        <div
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm"
+          onClick={closeDrawer}
+        ></div>
+        <div className="fixed top-0 right-0 h-full w-full max-w-xs bg-gray-900 shadow-lg p-6">
           <button onClick={closeDrawer} className="absolute top-4 right-4">
             <X className="h-6 w-6 text-white" />
           </button>
           <nav className="mt-12 flex flex-col items-center space-y-6">
-            <hr />
+            
+            {/* FIXED: Added the missing navigation links for the mobile view */}
+            <NavLink to="/explore" onClick={closeDrawer} className={({ isActive }) => `text-lg ${isActive ? "font-bold" : "text-white"}`}>
+              Explore
+            </NavLink>
+            <NavLink to="/upcoming" onClick={closeDrawer} className={({ isActive }) => `text-lg ${isActive ? "font-bold" : "text-white"}`}>
+              Upcoming
+            </NavLink>
+
+            <hr className="w-full border-gray-700" />
+
             {isAuthenticated ? (
               <>
+                <NavLink to="/events/new" onClick={closeDrawer} className={({ isActive }) => `text-lg ${isActive ? "font-bold" : "text-white"}`}>
+                  Create Event
+                </NavLink>
+                <NavLink to="/me" onClick={closeDrawer} className={({ isActive }) => `text-lg ${isActive ? "font-bold" : "text-white"}`}>
+                  Profile
+                </NavLink>
                 <button
                   onClick={() => {
                     handleLogout();

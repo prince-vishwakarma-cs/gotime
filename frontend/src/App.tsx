@@ -29,7 +29,7 @@ const AppContent = () => {
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center h-screen bg-gray-50">
+        <div className="flex h-full items-center justify-center bg-gray-50">
           <Loader />
         </div>
       }

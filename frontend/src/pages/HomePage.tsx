@@ -1,9 +1,7 @@
 import { Calendar, ChevronDown, MapPin, PartyPopper } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import type { EventCardProps } from "../types/eventTypes";
 import { useGetTrendingEventsQuery } from "../redux/api/eventAPI";
-import { closeModals, openLoginModal } from "../redux/reducer/uiSlice";
-import { useDispatch, useSelector } from "react-redux";
+import type { EventCardProps } from "../types/eventTypes";
 
 const EventCard = ({ event }: EventCardProps) => {
   const formattedDate = new Date(event.start_time).toLocaleDateString("en-IN", {
@@ -68,19 +66,9 @@ const review = [
 
 export default function Component() {
   const navigate = useNavigate();
-  const dispatch = useDispatch()
-  const {isLoginModalOpen} = useSelector((state: any) => state.ui);
   const { data: trendingEventsData, isLoading } = useGetTrendingEventsQuery();
 
   const trendingEvents = trendingEventsData?.events;
-
-  const buttonhandle = ()=>{
-    if(isLoginModalOpen){
-      dispatch(closeModals())
-    }else{
-      dispatch(openLoginModal())
-    }
-  }
 
   if (isLoading) {
     return (
@@ -91,11 +79,9 @@ export default function Component() {
   }
 
   return (
-    <div className="no-scrollbar">
-      {/* --- HERO SECTION --- */}
+    <div className="h-full">
       <section className="relative pt-24 pb-12 sm:pt-32 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Responsive font size and line height */}
           <h1 className="text-center text-4xl leading-tight sm:text-5xl sm:leading-snug lg:text-[3.375rem] lg:leading-[3.92644rem] font-semibold tracking-tight text-white font-[Inter]">
             Create events, invite friends
             <br />
@@ -107,15 +93,7 @@ export default function Component() {
           <p className="mt-4 text-center text-base sm:text-lg font-normal leading-normal tracking-[-0.05rem] text-text-primary font-[Inter]">
             Manage and Attend Events Easily
           </p>
-          {/* This flex container is already responsive */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 mt-6">
-            {/* <Link
-              to="/explore"
-              className="bg-button-bg rounded-full text-text-primary hover:bg-light-button-hover-bg hover:text-light-button-hover-text px-6 py-3 flex justify-center items-center"
-            >
-              <Star className="w-4 h-4 mr-2" />
-              Explore events
-            </Link> */}
             <Link
               to="/explore"
               className="bg-primary-button-bg rounded-full text-text-primary-button hover:bg-primary-button-hover-bg hover:text-primary-button-text-color px-6 py-3 flex justify-center items-center"
@@ -129,7 +107,6 @@ export default function Component() {
           </p>
         </div>
       </section>
-      <button onClick={buttonhandle}>Open modal</button>
 
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -159,8 +136,6 @@ export default function Component() {
           </div>
         </div>
       </section>
-
-      {/* --- TESTIMONIALS SECTION --- */}
       <section className="py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center mb-12">
@@ -196,8 +171,6 @@ export default function Component() {
             </div>
             <span className="text-white">+ Testimonials</span>
           </div>
-
-          {/* Responsive grid: 1 col on mobile, up to 3 on larger screens */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {review.map((rev) => (
               <div
