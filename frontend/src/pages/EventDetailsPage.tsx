@@ -347,9 +347,8 @@ const EventDetailPage = () => {
         </div>
       </div>
 
-      {/* Modals */}
-      <LoginModal />
-      <RegisterModal />
+ 
+      
       <ShareModal
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}

@@ -32,19 +32,39 @@ export const Navbar = () => {
           </Link>
           {/* --- DESKTOP NAVIGATION (Correct) --- */}
           <div className="hidden md:flex items-center space-x-4 md:space-x-6">
-            <NavLink to="/explore" className={({ isActive }) => isActive ? "font-bold" : "text-white"}>
+            <NavLink
+              to="/explore"
+              className={({ isActive }) =>
+                isActive ? "font-bold" : "text-white"
+              }
+            >
               Explore
             </NavLink>
-            <NavLink to="/upcoming" className={({ isActive }) => isActive ? "font-bold" : "text-white"}>
+            <NavLink
+              to="/upcoming"
+              className={({ isActive }) =>
+                isActive ? "font-bold" : "text-white"
+              }
+            >
               Upcoming
             </NavLink>
 
             {isAuthenticated ? (
               <>
-                <NavLink to="/events/new" className={({ isActive }) => isActive ? "font-bold" : "text-white"}>
+                <NavLink
+                  to="/events/new"
+                  className={({ isActive }) =>
+                    isActive ? "font-bold" : "text-white"
+                  }
+                >
                   Create Event
                 </NavLink>
-                <NavLink to="/me" className={({ isActive }) => isActive ? "font-bold" : "text-white"}>
+                <NavLink
+                  to="/me"
+                  className={({ isActive }) =>
+                    isActive ? "font-bold" : "text-white"
+                  }
+                >
                   Profile
                 </NavLink>
                 <button
@@ -88,12 +108,23 @@ export const Navbar = () => {
             <X className="h-6 w-6 text-white" />
           </button>
           <nav className="mt-12 flex flex-col items-center space-y-6">
-            
             {/* FIXED: Added the missing navigation links for the mobile view */}
-            <NavLink to="/explore" onClick={closeDrawer} className={({ isActive }) => `text-lg ${isActive ? "font-bold" : "text-white"}`}>
+            <NavLink
+              to="/explore"
+              onClick={closeDrawer}
+              className={({ isActive }) =>
+                `text-lg ${isActive ? "font-bold" : "text-white"}`
+              }
+            >
               Explore
             </NavLink>
-            <NavLink to="/upcoming" onClick={closeDrawer} className={({ isActive }) => `text-lg ${isActive ? "font-bold" : "text-white"}`}>
+            <NavLink
+              to="/upcoming"
+              onClick={closeDrawer}
+              className={({ isActive }) =>
+                `text-lg ${isActive ? "font-bold" : "text-white"}`
+              }
+            >
               Upcoming
             </NavLink>
 
@@ -101,10 +132,22 @@ export const Navbar = () => {
 
             {isAuthenticated ? (
               <>
-                <NavLink to="/events/new" onClick={closeDrawer} className={({ isActive }) => `text-lg ${isActive ? "font-bold" : "text-white"}`}>
+                <NavLink
+                  to="/events/new"
+                  onClick={closeDrawer}
+                  className={({ isActive }) =>
+                    `text-lg ${isActive ? "font-bold" : "text-white"}`
+                  }
+                >
                   Create Event
                 </NavLink>
-                <NavLink to="/me" onClick={closeDrawer} className={({ isActive }) => `text-lg ${isActive ? "font-bold" : "text-white"}`}>
+                <NavLink
+                  to="/me"
+                  onClick={closeDrawer}
+                  className={({ isActive }) =>
+                    `text-lg ${isActive ? "font-bold" : "text-white"}`
+                  }
+                >
                   Profile
                 </NavLink>
                 <button
@@ -121,8 +164,8 @@ export const Navbar = () => {
             ) : (
               <button
                 onClick={() => {
-                  dispatch(openLoginModal());
                   closeDrawer();
+                  setTimeout(() => dispatch(openLoginModal()), 350); // 350ms delay
                 }}
                 className="w-full text-center text-lg text-white"
               >

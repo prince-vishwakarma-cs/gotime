@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { Navbar } from "./Navbar";
-
+import LoginModal from "../modals/LoginModal";
+import RegisterModal from "../modals/RegisterModal";
 
 const MainLayout = () => {
   return (
@@ -8,6 +9,8 @@ const MainLayout = () => {
       <Navbar />
       <main className="relative h-full z-10 pt-10 ">
         <Outlet />
+        <LoginModal />
+        <RegisterModal />
       </main>
     </div>
   );
