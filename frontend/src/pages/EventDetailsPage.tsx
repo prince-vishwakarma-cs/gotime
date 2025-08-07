@@ -1,12 +1,9 @@
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import LoginModal from "../modals/LoginModal";
-import RegisterModal from "../modals/RegisterModal";
-import ShareModal from "../modals/ShareModal";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../redux/store";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import ShareModal from "../modals/ShareModal";
 import {
   useAddBookmarkMutation,
   useDeleteEventMutation,
@@ -17,6 +14,7 @@ import {
   useRegisterForEventMutation,
 } from "../redux/api/eventAPI";
 import { openLoginModal } from "../redux/reducer/uiSlice";
+import type { RootState } from "../redux/store";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
