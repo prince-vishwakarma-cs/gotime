@@ -79,8 +79,8 @@ export default function Component() {
   }
 
   return (
-    <div className="h-full">
-      <section className="relative pt-24 pb-12 sm:pt-32 px-6 sm:px-6 lg:px-8">
+    <div className="h-full px-4 sm:px-6 lg:px-8">
+      <section className="relative pt-24 pb-12 sm:pt-32">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-center text-4xl leading-tight sm:text-5xl sm:leading-snug lg:text-[3.375rem] lg:leading-[3.92644rem] font-semibold tracking-tight text-white ">
             Create events, invite friends
@@ -105,7 +105,7 @@ export default function Component() {
         </div>
       </section>
 
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
+      <section className="py-16 ">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-center text-3xl md:text-4xl pb-12 font-semibold tracking-tight text-white">
             Trending Events
@@ -118,7 +118,9 @@ export default function Component() {
                 ))}
               </div>
             ) : (
-              <p className="text-secondary-text">No trending events right now.</p>
+              <p className="text-secondary-text">
+                No trending events right now.
+              </p>
             )}
           </section>
 
@@ -132,7 +134,7 @@ export default function Component() {
           </div>
         </div>
       </section>
-      <section className="py-8 px-4 sm:px-6 lg:px-8">
+      <section className="py-8 ">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center mb-12">
             <div className="flex -space-x-3 mr-4">
@@ -150,7 +152,7 @@ export default function Component() {
                   className="rounded-full border border-button-border"
                 />
               </div>
-              <div >
+              <div>
                 <img
                   src="https://i.pravatar.cc/40?u=c"
                   alt="Reviewer 3"
@@ -196,7 +198,7 @@ export default function Component() {
         </div>
       </section>
 
-      <footer className="bg-card-bg text-card-tertiary-text py-16 px-4 sm:px-6 lg:px-8 mt-12">
+      <footer className="bg-card-bg text-card-tertiary-text py-16  mt-12">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="col-span-2 md:col-span-1">

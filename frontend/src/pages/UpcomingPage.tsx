@@ -74,9 +74,9 @@ const UpcomingEventsPage = () => {
   };
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto pt-24 px-4 sm:px-6 lg:px-8">
       <header className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Upcoming Events</h1>
+        <h1 className="text-4xl font-bold  mb-4">Upcoming Events</h1>
         <div className="relative text-text-primary bg-button-bg p-2 rounded-xl max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 " />
           <input
@@ -125,8 +125,8 @@ const UpcomingEventsPage = () => {
             </>
           ) : (
             <div className="text-center py-20">
-              <h3 className="text-xl font-semibold text-gray-700">No Events Found</h3>
-              <p className="text-gray-500">Try adjusting your search or check back later.</p>
+              <h3 className="text-xl font-semibold text-secondary-text">No Events Found</h3>
+              <p className="text-secondary-text">Try adjusting your search or check back later.</p>
             </div>
           )}
         </>
