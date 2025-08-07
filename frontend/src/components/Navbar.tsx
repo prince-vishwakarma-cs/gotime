@@ -92,88 +92,84 @@ export const Navbar = () => {
           </div>
         </nav>
       </header>
-
-      {/* --- MOBILE DRAWER --- */}
-      <div
-        className={`fixed inset-0 z-50 transform ${
-          isDrawerOpen ? "translate-x-0" : "translate-x-full"
-        } transition-transform duration-300 ease-in-out md:hidden`}
-      >
         <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm"
-          onClick={closeDrawer}
-        ></div>
-        <div className="fixed top-0 right-0 h-full w-full max-w-xs bg-gray-900 shadow-lg p-6">
-          <button onClick={closeDrawer} className="absolute top-4 right-4">
-            <X className="h-6 w-6 text-white" />
-          </button>
-          <nav className="mt-12 flex flex-col items-center space-y-6">
-            {/* FIXED: Added the missing navigation links for the mobile view */}
-            <NavLink
-              to="/explore"
-              onClick={closeDrawer}
-              className={({ isActive }) =>
-                `text-lg ${isActive ? "font-bold" : "text-white"}`
-              }
-            >
-              Explore
-            </NavLink>
-            <NavLink
-              to="/upcoming"
-              onClick={closeDrawer}
-              className={({ isActive }) =>
-                `text-lg ${isActive ? "font-bold" : "text-white"}`
-              }
-            >
-              Upcoming
-            </NavLink>
+        onClick={closeDrawer}
+        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300
+          ${isDrawerOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      />
 
-            <hr className="w-full border-gray-700" />
-
-            {isAuthenticated ? (
-              <>
-                <NavLink
-                  to="/events/new"
-                  onClick={closeDrawer}
-                  className={({ isActive }) =>
-                    `text-lg ${isActive ? "font-bold" : "text-white"}`
-                  }
-                >
-                  Create Event
-                </NavLink>
-                <NavLink
-                  to="/me"
-                  onClick={closeDrawer}
-                  className={({ isActive }) =>
-                    `text-lg ${isActive ? "font-bold" : "text-white"}`
-                  }
-                >
-                  Profile
-                </NavLink>
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    closeDrawer();
-                  }}
-                  disabled={isLoggingOut}
-                  className="w-full text-center text-lg text-white disabled:opacity-50"
-                >
-                  {isLoggingOut ? "Logging out..." : "Logout"}
-                </button>
-              </>
-            ) : (
+      {/* 2. Sliding Drawer */}
+      {/* This container now ONLY handles the sliding drawer content. */}
+      <div
+        className={`fixed top-0 right-0 h-full w-full max-w-xs bg-primary-background shadow-lg p-6 z-50 transform transition-transform duration-300 ease-in-out
+          ${isDrawerOpen ? "translate-x-0" : "translate-x-full"}`}
+      >
+        <button onClick={closeDrawer} className="absolute top-4 right-4">
+          <X className="h-6 w-6 text-primary-text" />
+        </button>
+        <nav className="mt-12 flex flex-col items-center space-y-6">
+          <NavLink
+            to="/explore"
+            onClick={closeDrawer}
+            className={({ isActive }) =>
+              `text-lg ${isActive ? "font-bold" : "text-white"}`
+            }
+          >
+            Explore
+          </NavLink>
+          <NavLink
+            to="/upcoming"
+            onClick={closeDrawer}
+            className={({ isActive }) =>
+              `text-lg ${isActive ? "font-bold" : "text-white"}`
+            }
+          >
+            Upcoming
+          </NavLink>
+          <hr className="w-full border-border" />
+          {isAuthenticated ? (
+            <>
+              <NavLink
+                to="/events/new"
+                onClick={closeDrawer}
+                className={({ isActive }) =>
+                  `text-lg ${isActive ? "font-bold" : "text-white"}`
+                }
+              >
+                Create Event
+              </NavLink>
+              <NavLink
+                to="/me"
+                onClick={closeDrawer}
+                className={({ isActive }) =>
+                  `text-lg ${isActive ? "font-bold" : "text-white"}`
+                }
+              >
+                Profile
+              </NavLink>
               <button
                 onClick={() => {
+                  handleLogout();
                   closeDrawer();
-                  setTimeout(() => dispatch(openLoginModal()), 350); // 350ms delay
                 }}
-                className="w-full text-center text-lg text-white"
+                disabled={isLoggingOut}
+                className="w-full text-center text-lg text-white disabled:opacity-50"
               >
-                Login
+                {isLoggingOut ? "Logging out..." : "Logout"}
               </button>
-            )}
-          </nav>
-        </div>
+            </>
+          ) : (
+            <button
+              onClick={() => {
+                closeDrawer();
+                setTimeout(() => dispatch(openLoginModal()), 350); // 350ms delay
+              }}
+              className="w-full text-center text-lg text-white"
+            >
+              Login
+            </button>
+          )}
+        </nav>
       </div>
     </>
   );
