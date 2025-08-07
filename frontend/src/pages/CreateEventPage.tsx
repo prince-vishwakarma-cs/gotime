@@ -46,15 +46,9 @@ const imageOptions = [
     'https://images.pexels.com/photos/21413075/pexels-photo-21413075/free-photo-of-fireworks-show-over-the-stage.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
 ];
 
-
-
 const CreateEventPage = () => {
   const navigate = useNavigate();
-  
-  // 2. Call the hook to get the trigger function and the mutation's state
-  const [createEvent, { isLoading}] = useCreateEventMutation();
-
-  // Set default dates
+  const [createEvent, { isLoading }] = useCreateEventMutation();
   const now = new Date();
   const tomorrow = new Date();
   tomorrow.setDate(now.getDate() + 1);
@@ -67,12 +61,11 @@ const CreateEventPage = () => {
     end_time: formatDateForInput(tomorrow),
     capacity: 100,
     is_public: true,
-    image_url: imageOptions[0], // Set a default image
+    image_url: imageOptions[0],
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
-    
     if (type === 'checkbox') {
         const { checked } = e.target as HTMLInputElement;
         setFormData(prev => ({ ...prev, [name]: checked }));
@@ -88,65 +81,66 @@ const CreateEventPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Call the trigger function with the form data.
-      // .unwrap() returns a promise that resolves on success or throws an error on failure.
       const newEventResponse = await createEvent({
         ...formData,
-        capacity: Number(formData.capacity), // Ensure capacity is a number
+        capacity: Number(formData.capacity),
       }).unwrap();
-      
       toast.success('Event created successfully!');
-      // Redirect to the newly created event's page
       navigate(`/events/${newEventResponse.event.id}`);
-
     } catch (err: any) {
       toast.error('Failed to create event.');
     }
   };
 
+  // Consistent styles for all form inputs
+  const inputStyles = "mt-1 block w-full px-3 py-2 text-text-primary bg-button-bg rounded-lg outline-none";
+
   return (
-    <div className="container mx-auto py-12">
-      <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-md">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Create a New Event</h1>
+    <div className="container mx-auto pt-24 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto p-8 rounded-xl shadow-md">
+        <h1 className="text-3xl font-bold mb-8">Create a New Event</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700">Event Title</label>
+            <label htmlFor="title" className="block text-sm font-medium">Event Title</label>
             <input
               type="text"
               name="title"
               id="title"
               value={formData.title}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-800 focus:border-gray-800"
+              placeholder='Enter event title'
+              className={inputStyles}
               required
             />
           </div>
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+            <label htmlFor="description" className="block text-sm font-medium">Description</label>
             <textarea
               name="description"
               id="description"
+              placeholder='Enter event description'
               rows={4}
               value={formData.description}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-800 focus:border-gray-800"
+              className={inputStyles}
               required
             />
           </div>
 
           {/* Location */}
           <div>
-            <label htmlFor="location" className="block text-sm font-medium text-gray-700">Location</label>
+            <label htmlFor="location" className="block text-sm font-medium">Location</label>
             <input
               type="text"
               name="location"
               id="location"
               value={formData.location}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-800 focus:border-gray-800"
+              placeholder='Enter event location'
+              className={inputStyles}
               required
             />
           </div>
@@ -154,26 +148,26 @@ const CreateEventPage = () => {
           {/* Start & End Time */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="start_time" className="block text-sm font-medium text-gray-700">Start Time</label>
+              <label htmlFor="start_time" className="block text-sm font-medium">Start Time</label>
               <input
                 type="datetime-local"
                 name="start_time"
                 id="start_time"
                 value={formData.start_time}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-800 focus:border-gray-800"
+                className={inputStyles}
                 required
               />
             </div>
             <div>
-              <label htmlFor="end_time" className="block text-sm font-medium text-gray-700">End Time</label>
+              <label htmlFor="end_time" className="block text-sm font-medium">End Time</label>
               <input
                 type="datetime-local"
                 name="end_time"
                 id="end_time"
                 value={formData.end_time}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-800 focus:border-gray-800"
+                className={inputStyles}
                 required
               />
             </div>
@@ -181,7 +175,7 @@ const CreateEventPage = () => {
 
           {/* Capacity */}
           <div>
-            <label htmlFor="capacity" className="block text-sm font-medium text-gray-700">Capacity</label>
+            <label htmlFor="capacity" className="block text-sm font-medium">Capacity</label>
             <input
               type="number"
               name="capacity"
@@ -189,14 +183,15 @@ const CreateEventPage = () => {
               min="1"
               value={formData.capacity}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-800 focus:border-gray-800"
+              placeholder='e.g., 100'
+              className={inputStyles}
               required
             />
           </div>
           
           {/* Image Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Select an Image</label>
+            <label className="block text-sm font-medium">Select an Image</label>
             <div className="mt-2 grid grid-cols-3 gap-4">
                 {imageOptions.map((url, index) => (
                     <button
@@ -219,10 +214,10 @@ const CreateEventPage = () => {
           {/* Public Toggle */}
           <div className="flex items-center justify-between pt-2">
             <div>
-                <label htmlFor="is_public" className="font-medium text-gray-900">
+                <label htmlFor="is_public" className="font-medium">
                     Make this event public
                 </label>
-                <p className="text-sm text-gray-500">Anyone can see and register for this event.</p>
+                <p className="text-sm">Anyone can see and register for this event.</p>
             </div>
             <ToggleSwitch
                 id="is_public"
@@ -232,9 +227,7 @@ const CreateEventPage = () => {
             />
           </div>
 
-          {/* Error and Submit */}
-{/* */}
-          {/* {error && <p className="text-red-500 text-sm">{error}</p>} */}
+          {/* Submit */}
           <div className="pt-4">
             <button
               type="submit"
